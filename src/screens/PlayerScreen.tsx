@@ -4,19 +4,26 @@ import TrackPlayer, { Track } from 'react-native-track-player';
 
 const songs: Track[] = [
   {
-    id: 1,
+    id: '1',
     title: 'Tum ho',
-    artist: 'Mohit chauhan',
+    artist: 'Mohit Chauhan',
     url: require("../assets/music/tumho.mp3"),
     uri: require("../assets/img/tum.jpg")
   },
   {
-    id: 2,
+    id: '2',
     title: 'The Idols',
     artist: 'Weeknd',
-    url:  require("../assets/music/tumho.mp3"),
+    url: require("../assets/music/weeknd.mp3"),
     uri: require("../assets/img/weeknd.jpg")
-  }
+  },
+  {
+    id: 3,
+    title: 'The smiths',
+    artist: 'smiths',
+    url:require("../assets/music/smith.mp3"),
+    uri: require("../assets/img/smith.jpg")
+  },
 ];
 
 function PlayerScreen() {
@@ -30,7 +37,7 @@ function PlayerScreen() {
     setupTrackPlayer();
 
     const progressInterval = setInterval(async () => {
-      if (isTrackPlayerInit) {
+      if (isTrackPlayerInit && isPlaying) {
         const trackPosition = await TrackPlayer.getPosition();
         const trackDuration = await TrackPlayer.getDuration();
         setPosition(trackPosition);
@@ -40,15 +47,14 @@ function PlayerScreen() {
 
     return () => {
       clearInterval(progressInterval);
-      // TrackPlayer.stop();
     };
-  }, []);
+  }, [isPlaying]);
 
   const setupTrackPlayer = async () => {
     if (!isTrackPlayerInit) {
       await TrackPlayer.setupPlayer();
       await TrackPlayer.add(songs);
-      setIsTrackPlayerInit(true);
+      setIsTrackPlayerInit(false);
     }
   };
 
@@ -75,8 +81,10 @@ function PlayerScreen() {
       style={styles.songItem}
       onPress={() => {
         setCurrentSong(item);
-        TrackPlayer.skip(item.id);
-        togglePlayback();
+        TrackPlayer.skip(item.id).then(() => {
+          togglePlayback();
+        });
+        // togglePlayback();
       }}
     >
       <Image source={item.uri} style={styles.songImage} />

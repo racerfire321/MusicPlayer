@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image,Permission } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image,Permission, Button } from 'react-native';
 import TrackPlayer, { Track } from 'react-native-track-player';
 
 const songs: Track[] = [
@@ -15,8 +15,15 @@ const songs: Track[] = [
     id: 2,
     title: 'The Idols',
     artist: 'Weeknd',
-    url:require("../assets/music/tumho.mp3"),
+    url:require("../assets/music/weeknd.mp3"),
     uri: require("../assets/img/weeknd.jpg")
+  },
+  {
+    id: 3,
+    title: 'The smiths',
+    artist: 'smiths',
+    url:require("../assets/music/smith.mp3"),
+    uri: require("../assets/img/smith.jpg")
   },
 ];
 
@@ -32,12 +39,28 @@ function HomeScreen({ navigation }: { navigation: any }) {
     await TrackPlayer.add(songs);
     setIsTrackPlayerInit(true);
   };
-
   const playSong = async (songId: number) => {
-    console.warn(songId);
-    await TrackPlayer.skip(songId);
-    await TrackPlayer.play();
-    navigation.navigate('PlayerScreen');
+    console.warn("Attempting to play song with ID:", songId);
+  
+    try {
+      await TrackPlayer.stop(); // Stop current playback
+      console.warn("Stopped current playback");
+  
+      await TrackPlayer.skip(songId - 1); // Skip to the song with the specified ID
+      console.warn("Skipped to song with ID:", songId - 1);
+  
+      await TrackPlayer.play(); // Start playback of the new song
+      console.warn("Playback started for song with ID:", songId);
+  
+      navigation.navigate('PlayerScreen'); // Navigate to PlayerScreen
+    } catch (error) {
+      console.error("Error occurred while playing song:", error);
+      // Handle error as needed
+    }
+  };
+  
+  const playMap = async () => {
+    navigation.navigate('MapScreen');
   };
 
   const renderItem = ({ item }: { item: Track }) => (
@@ -55,6 +78,7 @@ function HomeScreen({ navigation }: { navigation: any }) {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
+      <Button title='Click me' onPress={playMap}/>
     </View>
   );
 }
