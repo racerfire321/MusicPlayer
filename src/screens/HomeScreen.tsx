@@ -43,19 +43,19 @@ function HomeScreen({ navigation }: { navigation: any }) {
     console.warn("Attempting to play song with ID:", songId);
   
     try {
-      await TrackPlayer.stop(); // Stop current playback
+      await TrackPlayer.stop(); 
       console.warn("Stopped current playback");
   
-      await TrackPlayer.skip(songId - 1); // Skip to the song with the specified ID
+      await TrackPlayer.skip(songId - 1); 
       console.warn("Skipped to song with ID:", songId - 1);
   
-      await TrackPlayer.play(); // Start playback of the new song
+      await TrackPlayer.play(); 
       console.warn("Playback started for song with ID:", songId);
   
-      navigation.navigate('PlayerScreen'); // Navigate to PlayerScreen
+      navigation.navigate('PlayerScreen'); 
     } catch (error) {
       console.error("Error occurred while playing song:", error);
-      // Handle error as needed
+      
     }
   };
   
