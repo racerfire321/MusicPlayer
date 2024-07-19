@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
 interface MusicCardProps {
-  albumCover: string;
+  albumCover: any;
   songName: string;
   artistName: string;
   popularity: number;
@@ -11,7 +11,7 @@ interface MusicCardProps {
 const MusicCard: React.FC<MusicCardProps> = ({ albumCover, songName, artistName, popularity }) => {
   return (
     <View style={styles.card}>
-      <Image source={{ uri: albumCover }} style={styles.albumCover} />
+      <Image source={ albumCover } style={styles.albumCover} />
       <View style={styles.textContainer}>
         <Text style={styles.songName}>{songName}</Text>
         <Text style={styles.artistName}>{artistName}</Text>
@@ -24,7 +24,6 @@ const MusicCard: React.FC<MusicCardProps> = ({ albumCover, songName, artistName,
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
-    borderRadius: 8,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
@@ -34,11 +33,16 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     flexDirection: 'row',
     alignItems: 'center',
+    width: 200,
+    height: 250,
+    borderRadius: 70,
+    transform: [{ scaleY: 0.5 },{scaleX : 0.4}],
   },
   albumCover: {
     height: 100,
     width: 100,
     resizeMode: 'cover',
+    borderRadius: 50,
   },
   textContainer: {
     padding: 16,
