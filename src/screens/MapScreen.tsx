@@ -78,7 +78,7 @@ const MapScreen: React.FC = () => {
           artist: 'Artist 1',
           latitude: 48.8566,
           longitude: 2.3522, 
-          albumCover: require('../assets/music/tum.jpg'),
+          albumCover: require('../assets/img/tum.jpg'),
           songName: 'Song 1',
           artistName: 'Artist 1',
           popularity: 90,
@@ -89,7 +89,7 @@ const MapScreen: React.FC = () => {
           artist: 'Artist 2',
           latitude: 51.5074,
           longitude: -0.1278,
-          albumCover: require('../assets/music/smith.jpg'),
+          albumCover: require('../assets/img/smith.jpg'),
           songName: 'Song 2',
           artistName: 'Artist 2',
           popularity: 85,
@@ -100,7 +100,7 @@ const MapScreen: React.FC = () => {
           artist: 'Artist 3',
           latitude: 40.7128,
           longitude: -74.0060, 
-          albumCover: require('../assets/music/weeknd.jpg'),
+          albumCover: require('../assets/img/weeknd.jpg'),
           songName: 'Song 3',
           artistName: 'Artist 3',
           popularity: 88,
@@ -131,9 +131,10 @@ const MapScreen: React.FC = () => {
            key={music.id}
            coordinate={{ latitude: music.latitude, longitude: music.longitude }}
          >
+          
            <MusicCard
             key={music.id}
-            albumCover={"s"}
+            albumCover={music.albumCover}
             songName={music.songName}
             artistName={music.artistName}
             popularity={music.popularity}
@@ -141,7 +142,7 @@ const MapScreen: React.FC = () => {
          </Marker>
         ))}
       </MapView>
-      <View style={styles.cardContainer}>
+      {/* <View style={styles.cardContainer}>
         {popularMusic.map((music: any) => (
           <MusicCard
             key={music.id}
@@ -151,7 +152,7 @@ const MapScreen: React.FC = () => {
             popularity={music.popularity}
           />
         ))}
-      </View>
+      </View> */}
     </View>
   );
 };
