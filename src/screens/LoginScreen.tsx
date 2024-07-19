@@ -56,8 +56,8 @@ const LoginScreen: React.FC<Props> = ({ navigation, onLoginSuccess }) => {
           <TouchableOpacity onPress={handleForgotPassword}>
             <Text style={styles.linkText}>Forgot Password?</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Register</Text>
+          <TouchableOpacity style={styles.bottomLinks} onPress={handleRegister}>
+            <Text style={styles.linkText}>Register</Text>
           </TouchableOpacity>
         </View>
       </View>

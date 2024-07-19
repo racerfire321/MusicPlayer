@@ -5,6 +5,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import PlayerScreen from './src/screens/PlayerScreen';
 import MapScreen from './src/screens/MapScreen';
 import LoginScreen from './src/screens/LoginScreen';
+import ThemeProvider from './src/context/ThemeProvider';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ function App() {
   };
 
   return (
+    <ThemeProvider>
     <NavigationContainer>
       <Stack.Navigator>
         {isLoggedIn ? (
@@ -31,6 +33,7 @@ function App() {
         )}
       </Stack.Navigator>
     </NavigationContainer>
+    </ThemeProvider>
   );
 }
 
