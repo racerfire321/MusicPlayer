@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ThemeContext, ThemeContextProps } from './ThemeContext'; // Import the context
+import { ThemeContext, ThemeContextProps } from './ThemeContext'; 
 
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<ThemeContextProps['theme']>('light');

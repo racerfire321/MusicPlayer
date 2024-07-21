@@ -1,36 +1,38 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, Permission, Button } from 'react-native';
+import React, { useContext, useEffect, useState, useRef } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, Button, Animated, Easing } from 'react-native';
 import TrackPlayer, { Track } from 'react-native-track-player';
 import { ThemeContext, ThemeContextProps } from '../context/ThemeContext';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
 
 const songs: Track[] = [
   {
-        id: 1,
-        title: 'Tum ho',
-        artist: 'Mohit chauhan',
-        url: require("../assets/music/tumho.mp3"),
-        uri: require("../assets/img/tum.jpg")
-    
-      },
-      {
-        id: 2,
-        title: 'The Idols',
-        artist: 'Weeknd',
-        url:require("../assets/music/weeknd.mp3"),
-        uri: require("../assets/img/weeknd.jpg")
-      },
-      {
-        id: 3,
-        title: 'The smiths',
-        artist: 'smiths',
-        url:require("../assets/music/smith.mp3"),
-        uri: require("../assets/img/smith.jpg")
-      },
+    id: 1,
+    title: 'Tum ho',
+    artist: 'Mohit chauhan',
+    url: require("../assets/music/tumho.mp3"),
+    uri: require("../assets/img/tum.jpg")
+  },
+  {
+    id: 2,
+    title: 'The Idols',
+    artist: 'Weeknd',
+    url: require("../assets/music/weeknd.mp3"),
+    uri: require("../assets/img/weeknd.jpg")
+  },
+  {
+    id: 3,
+    title: 'The smiths',
+    artist: 'smiths',
+    url: require("../assets/music/smith.mp3"),
+    uri: require("../assets/img/smith.jpg")
+  },
 ];
 
 function HomeScreen({ navigation }: { navigation: any }) {
   const [isTrackPlayerInit, setIsTrackPlayerInit] = useState(false);
   const { theme, toggleTheme } = useContext<ThemeContextProps>(ThemeContext);
+  const spinValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     setupTrackPlayer();
@@ -44,26 +46,31 @@ function HomeScreen({ navigation }: { navigation: any }) {
 
   const playSong = async (songId: number) => {
     console.warn("Attempting to play song with ID:", songId);
-  
     try {
-      await TrackPlayer.stop(); 
+      await TrackPlayer.stop();
       console.warn("Stopped current playback");
-  
-      await TrackPlayer.skip(songId - 1); 
+      await TrackPlayer.skip(songId - 1);
       console.warn("Skipped to song with ID:", songId - 1);
-  
-      await TrackPlayer.play(); 
+      await TrackPlayer.play();
       console.warn("Playback started for song with ID:", songId);
-  
-      navigation.navigate('PlayerScreen'); 
+      navigation.navigate('PlayerScreen');
     } catch (error) {
       console.error("Error occurred while playing song:", error);
-      
     }
   };
 
   const playMap = async () => {
     navigation.navigate('MapScreen');
+  };
+
+  const spinAnimation = () => {
+    spinValue.setValue(0);
+    Animated.timing(spinValue, {
+      toValue: 1,
+      duration: 1000,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }).start(() => toggleTheme());
   };
 
   const renderItem = ({ item }: { item: Track }) => (
@@ -74,14 +81,27 @@ function HomeScreen({ navigation }: { navigation: any }) {
     </TouchableOpacity>
   );
 
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
   return (
     <View style={[styles.container, theme === 'light' ? styles.lightThemeContainer : styles.darkThemeContainer]}>
       <FlatList
         data={songs}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
       />
-      <Button title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`} onPress={toggleTheme} />
+      <TouchableOpacity style={[styles.themeButton, styles.rounded]} onPress={spinAnimation}>
+        <Animated.View style={{ transform: [{ rotate: spin }] }}>
+          {theme === 'light' ? (
+            <FontAwesomeIcon icon={faSun} size={34} color='white'/>
+          ) : (
+            <FontAwesomeIcon icon={faMoon} size={35} color='white' />
+          )}
+        </Animated.View>
+      </TouchableOpacity>
       <Button title='Click me' onPress={playMap} />
     </View>
   );
@@ -94,11 +114,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
   },
+  themeButton: {
+    padding: 5,
+    backgroundColor: '#1DB954',
+    bottom: 60,
+    left: 140,
+  },
+  rounded: {
+    borderRadius: 50,
+  },
   lightThemeContainer: {
-    backgroundColor: 'white', 
+    backgroundColor: 'white',
   },
   darkThemeContainer: {
-    backgroundColor: 'black', 
+    backgroundColor: 'black',
   },
   item: {
     flexDirection: 'row',
@@ -107,12 +136,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
-  lightTheme: {
-
-  },
-  darkTheme: {
-
-  },
+  lightTheme: {},
+  darkTheme: {},
   artwork: {
     width: 50,
     height: 50,
@@ -122,12 +147,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'black', 
+    color: '#666',
   },
   artist: {
     marginTop: 30,
     fontSize: 14,
-    color: '#666', 
+    color: '#666',
+  },
+  icon: {
+    width: 24,
+    height: 24,
   },
 });
 
