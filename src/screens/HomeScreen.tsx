@@ -4,6 +4,7 @@ import TrackPlayer, { Track } from 'react-native-track-player';
 import { ThemeContext, ThemeContextProps } from '../context/ThemeContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
+import Header from '../Components/header';
 
 const songs: Track[] = [
   {
@@ -45,23 +46,19 @@ function HomeScreen({ navigation }: { navigation: any }) {
   };
 
   const playSong = async (songId: number) => {
-    console.warn("Attempting to play song with ID:", songId);
     try {
       await TrackPlayer.stop();
-      console.warn("Stopped current playback");
       await TrackPlayer.skip(songId - 1);
-      console.warn("Skipped to song with ID:", songId - 1);
+      navigation.navigate({ name: 'NowPlaying', params: { song: songs.find(song => song.id === songId) } });
+
       await TrackPlayer.play();
-      console.warn("Playback started for song with ID:", songId);
-      navigation.navigate('PlayerScreen');
+      
+      
     } catch (error) {
       console.error("Error occurred while playing song:", error);
     }
   };
-
-  const playMap = async () => {
-    navigation.navigate('MapScreen');
-  };
+  
 
   const spinAnimation = () => {
     spinValue.setValue(0);
@@ -88,6 +85,7 @@ function HomeScreen({ navigation }: { navigation: any }) {
 
   return (
     <View style={[styles.container, theme === 'light' ? styles.lightThemeContainer : styles.darkThemeContainer]}>
+      <Header/>
       <FlatList
         data={songs}
         renderItem={renderItem}
@@ -96,13 +94,12 @@ function HomeScreen({ navigation }: { navigation: any }) {
       <TouchableOpacity style={[styles.themeButton, styles.rounded]} onPress={spinAnimation}>
         <Animated.View style={{ transform: [{ rotate: spin }] }}>
           {theme === 'light' ? (
-            <FontAwesomeIcon icon={faSun} size={34} color='white'/>
+            <FontAwesomeIcon icon={faSun} size={26} color='#ffffff'/>
           ) : (
-            <FontAwesomeIcon icon={faMoon} size={35} color='white' />
+            <FontAwesomeIcon icon={faMoon} size={26} color='#ffffff' />
           )}
         </Animated.View>
       </TouchableOpacity>
-      <Button title='Click me' onPress={playMap} />
     </View>
   );
 }
@@ -115,8 +112,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   themeButton: {
-    padding: 5,
-    backgroundColor: '#1DB954',
+    padding: 10,
+    backgroundColor: '#425444',
     bottom: 60,
     left: 140,
   },
