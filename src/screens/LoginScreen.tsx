@@ -15,7 +15,7 @@ const LoginScreen: React.FC<Props> = ({ navigation, onLoginSuccess }) => {
    
     if (username === 'user' && password === 'password') {
       onLoginSuccess(); 
-      navigation.navigate('Home');
+     
     } else {
       Alert.alert('Invalid credentials. Please try again.');
     }
