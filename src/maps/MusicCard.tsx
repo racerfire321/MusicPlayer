@@ -31,11 +31,12 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginBottom: 16,
     overflow: 'hidden',
-    flexDirection: 'row',
     alignItems: 'center',
     width: 200,
-    height: 250,
-    borderRadius: 70,
+    height: 220,
+    padding:10,
+    color: '#88cc88',
+    borderRadius: 80,
     transform: [{ scaleY: 0.5 },{scaleX : 0.4}],
   },
   albumCover: {
@@ -45,7 +46,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   textContainer: {
-    padding: 16,
     flex: 1,
   },
   songName: {
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   artistName: {
-    fontSize: 16,
+    fontSize: 24,
     color: '#555',
   },
   popularity: {
