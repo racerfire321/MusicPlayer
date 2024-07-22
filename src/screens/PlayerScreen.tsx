@@ -1,60 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Slider from '@react-native-community/slider';
-import TrackPlayer, { Track } from 'react-native-track-player';
+import TrackPlayer from 'react-native-track-player';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const songs: Track[] = [
-  {
-    id: '1',
-    title: 'Tum ho',
-    artist: 'Mohit Chauhan',
-    url: require("../assets/music/tumho.mp3"),
-    uri: require("../assets/img/tum.jpg")
-  },
-  {
-    id: '2',
-    title: 'The Idols',
-    artist: 'Weeknd',
-    url: require("../assets/music/weeknd.mp3"),
-    uri: require("../assets/img/weeknd.jpg")
-  },
-  {
-    id: '3',
-    title: 'The Smiths',
-    artist: 'Smiths',
-    url: require("../assets/music/smith.mp3"),
-    uri: require("../assets/img/smith.jpg")
-  },
-];
+interface SongProps {
+  song: any;
+}
 
-function PlayerScreen({ navigation }: { navigation: any }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+function PlayerScreen({ route, navigation }: { route: any, navigation: any }) {
+  const { song } = route.params || {};
+  const [isPlaying, setIsPlaying] = useState(true);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [currentSong, setCurrentSong] = useState(songs[0]);
-  const [isTrackPlayerInit, setIsTrackPlayerInit] = useState(false);
 
   useEffect(() => {
-    const setupTrackPlayer = async () => {
-      await TrackPlayer.setupPlayer();
-      await TrackPlayer.add(songs);
-      setIsTrackPlayerInit(true);
-    };
+    if (song) {
+      const interval = setInterval(async () => {
+        if (!isPlaying) {
+          const progress = await TrackPlayer.getProgress();
+          setPosition(progress.position);
+          setDuration(progress.duration);
+        }
+      }, 1000);
 
-    setupTrackPlayer();
-
-    const interval = setInterval(async () => {
-      if (isTrackPlayerInit && isPlaying) {
-        const progress = await TrackPlayer.getProgress();
-        setPosition(progress.position);
-        setDuration(progress.duration);
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isPlaying, isTrackPlayerInit]);
+      return () => clearInterval(interval);
+    }
+  }, [isPlaying, song]);
 
   const togglePlayback = async () => {
     if (isPlaying) {
@@ -64,37 +37,52 @@ function PlayerScreen({ navigation }: { navigation: any }) {
     }
     setIsPlaying(!isPlaying);
   };
+
   const formatTime = (seconds: number) => {
-        if (isNaN(seconds)) {
-          return '00:00';
-        }
-        const min = Math.floor(seconds / 60);
-        const sec = Math.floor(seconds % 60);
-        return `${min}:${sec < 10 ? '0' + sec : sec}`;
-      };
+    if (isNaN(seconds)) {
+      return '00:00';
+    }
+    const min = Math.floor(seconds / 60);
+    const sec = Math.floor(seconds % 60);
+    return `${min}:${sec < 10 ? '0' + sec : sec}`;
+  };
+
+  if (!song) {
+    return (
+      <LinearGradient colors={['#99c99c', '#1a1a1a']} style={styles.background}>
+        <View style={styles.container}>
+          <Text style={styles.message}>Please choose a song first</Text>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Icon name="arrow-back" size={30} color="#ffffff" />
+            <Text style={styles.backButtonText}> ╰┈➤Back</Text>
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
+    );
+  }
 
   return (
-    <LinearGradient colors={['#99c99c', '#1a1a1a']} collapsable style={styles.background}>
+    <LinearGradient colors={['#99c99c', '#1a1a1a']} style={styles.background}>
       <View style={styles.container}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" size={30} color="#ffffff" />
           <Text style={styles.backButtonText}> ╰┈➤Back</Text>
         </TouchableOpacity>
-        <Image source={currentSong.uri} style={styles.albumCover} />
-        <Text style={styles.songTitle}>{currentSong.title}</Text>
-        <Text style={styles.songArtist}>{currentSong.artist}</Text>
+        <Image source={song.uri} style={styles.albumCover} />
+        <Text style={styles.songTitle}>{song.title}</Text>
+        <Text style={styles.songArtist}>{song.artist}</Text>
         <View style={styles.progressContainer}>
           <Text style={styles.progressLabel}>{formatTime(position)}</Text>
           <Slider
             style={styles.progressBar}
             minimumValue={0}
-            maximumValue={1}
-            value={currentSong.duration}
+            maximumValue={duration}
+            value={position}
             minimumTrackTintColor="#1DB954"
-            maximumTrackTintColor="#000000"
+            maximumTrackTintColor="#ffffff"
             thumbTintColor="#1DB954"
             onSlidingComplete={(value) => TrackPlayer.seekTo(value)}
-            disabled={!isTrackPlayerInit}
+            disabled={!isPlaying}
           />
           <Text style={styles.progressLabel}>{formatTime(duration)}</Text>
         </View>
@@ -103,7 +91,7 @@ function PlayerScreen({ navigation }: { navigation: any }) {
             <Image source={require('../assets/img/next1.png')} style={styles.playIcon} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.playButton} onPress={togglePlayback}>
-            <Image source={isPlaying ? require('../assets/img/pause.png') : require('../assets/img/play.png')} style={styles.playIcon} />
+            <Image source={!isPlaying ? require('../assets/img/pause.png') : require('../assets/img/play.png')} style={styles.playIcon} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.controlButton} onPress={() => TrackPlayer.skipToNext()}>
             <Image source={require('../assets/img/next.png')} style={styles.playIcon} />
@@ -192,6 +180,11 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     marginLeft: 5,
+  },
+  message: {
+    fontSize: 18,
+    color: '#ffffff',
+    textAlign: 'center',
   },
 });
 
